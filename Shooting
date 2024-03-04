@@ -1,0 +1,35 @@
+using System.Collections;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody))]
+
+public class Shooting : MonoBehaviour
+{
+    [SerializeField] private GameObject _bulletPrefab;
+    [SerializeField] private Transform _target;
+    [SerializeField] private float _speed;
+    [SerializeField] private float _delayBetweenShots;
+
+    private void Start()
+    {
+        StartCoroutine(IntervalShoot(_delayBetweenShots));
+    }
+
+    private IEnumerator IntervalShoot(float delayBetweenShots)
+    {
+        var wait = new WaitForSeconds(delayBetweenShots);
+
+        while (true)
+        {
+            Vector3 directionToTarget = (_target.position - transform.position).normalized;
+
+            GameObject bullet = Instantiate(_bulletPrefab, transform.position + directionToTarget, Quaternion.identity);
+
+            bullet.GetComponent<Rigidbody>().transform.up = directionToTarget;
+
+            bullet.GetComponent<Rigidbody>().velocity = directionToTarget * _speed;
+
+            yield return wait;
+        }
+    }
+}
